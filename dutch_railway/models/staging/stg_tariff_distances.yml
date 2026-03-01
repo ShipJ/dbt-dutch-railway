@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: stg_tariff_distances
+    description: "Raw tariff distance matrix showing distances between all railway station pairs for fare calculations. Contains origin station in first column and distances to all other stations (399 destination columns). Distance values are in kilometers, with 'XXX' indicating same station."
+    columns:
+      - name: origin_station_code
+        description: "Origin station code"
+        data_type: varchar
+        tests:
+          - not_null
+          - unique

@@ -1,0 +1,7 @@
+groups:
+  - name: analytics_engineering
+    owner:
+      email: ae@company.com
+  - name: business_intelligence
+    owner:
+      email: bi@company.com

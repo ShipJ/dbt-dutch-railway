@@ -1,0 +1,70 @@
+version: 2
+
+models:
+  - name: stg_disruptions
+    description: "Clean disruption data with standardized naming and calculated fields"
+    columns:
+      - name: disruption_id
+        description: "Unique identifier for the disruption event"
+        data_type: integer
+        tests:
+          - unique
+          - not_null
+          
+      - name: ns_lines
+        description: |
+          These are the lines linked to a disruption by NS.
+          A problem with the lines in this column (when you want to analyze the data) is that they are not standardized. This column is therefore less suitable for analysis. Use the rdt_lines column instead.
+        data_type: text
+        
+      - name: rdt_lines
+        description: "RDT line descriptions affected"
+        data_type: text
+        
+      - name: rdt_lines_id
+        description: "RDT line identifiers"
+        data_type: text
+        
+      - name: affected_station_names
+        description: "Names of stations affected by the disruption"
+        data_type: text
+        
+      - name: affected_station_codes
+        description: "Station codes affected by the disruption"
+        data_type: text
+        
+      - name: cause_nl
+        description: "Disruption cause description in Dutch"
+        data_type: text
+
+      - name: cause_en
+        description: "Disruption cause description in English"
+        data_type: text
+
+      - name: statistical_cause_nl
+        description: "Statistical cause category in Dutch"
+        data_type: text
+
+      - name: statistical_cause_en
+        description: "Statistical cause category in English"
+        data_type: text
+        
+      - name: cause_group
+        description: "High-level cause grouping (staff, infrastructure, external, etc.)"
+        data_type: varchar
+        
+      - name: disruption_start_time
+        description: "When the disruption started"
+        data_type: timestamp
+        tests:
+          - not_null
+          
+      - name: disruption_end_time
+        description: "When the disruption ended"
+        data_type: timestamp
+        
+      - name: duration_minutes
+        description: "Total duration of the disruption in minutes"
+        data_type: integer
+        tests:
+          - not_null

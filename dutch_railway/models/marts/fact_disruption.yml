@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: fact_disruption
+    description: |
+      Dimension table containing railway station attributes.
+      Built from an SCD Type 2 snapshot and filtered to current records only
+      (dbt_valid_to is null).
+
+      Grain: one row per station (current state only).
+
+    columns:
+      - name: station_id
+        description: Surrogate key identifying the station.

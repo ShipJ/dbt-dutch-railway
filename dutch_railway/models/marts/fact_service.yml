@@ -1,0 +1,8 @@
+version: 2
+
+models:
+  - name: fact_service
+    description: |
+      Dimension table containing railway station attributes.
+      Built from an SCD Type 2 snapshot and filtered to current records only
+      (dbt_valid_to is null).

@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: stg_stations
+    description: "Standardized station information with cleaned column names and data types"
+    columns:
+      - name: station_id
+        description: "Unique identifier for the station"
+        data_type: bigint
+        tests:
+          - unique
+          - not_null
+      - name: station_code
+        description: "Station code (short abbreviation used in services data)"
+        data_type: varchar
+        tests:
+          - unique
+          - not_null
+      - name: uic_code
+        description: "UIC station code (international standard)"
+        data_type: bigint
+        tests:
+          - unique
+          - not_null
+      - name: name_short
+        description: "Short name of the station"
+        data_type: varchar
+        tests:
+          - not_null
+      - name: name_medium
+        description: "Medium name of the station"
+        data_type: varchar
+        tests:
+          - not_null
+      - name: station_name
+        description: "Full name of the station"
+        data_type: varchar
+        tests:
+          - not_null
+      - name: slug
+        description: "URL-friendly slug of the station name"
+        data_type: varchar
+        tests:
+          - not_null
+      - name: country
+        description: "Country code (NL, D, B, F, etc.)"
+        data_type: varchar
+        tests:
+          - not_null
+      - name: station_type
+        description: "Station type classification"
+        data_type: varchar
+        tests:
+          - not_null
+      - name: latitude
+        description: "Latitude coordinate"
+        data_type: double
+        tests:
+          - not_null
+      - name: longitude
+        description: "Longitude coordinate"
+        data_type: double
+        tests:
+          - not_null

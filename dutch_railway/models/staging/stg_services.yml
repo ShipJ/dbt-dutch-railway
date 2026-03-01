@@ -1,0 +1,86 @@
+version: 2
+
+models:
+  - name: stg_services
+    description: "Cleaned and standardized service data from Dutch railway operations. Each line represents a stop for a specific service on a given date, with normalized column names and data types."
+    columns:
+      - name: service_rdt_id
+        description: "Service RDT identifier - unique identifier for each service"
+        data_type: bigint
+        tests:
+          - not_null
+      - name: service_date
+        description: "Date of the service operation"
+        data_type: date
+        tests:
+          - not_null
+      - name: service_type
+        description: "Type of service (e.g., Intercity, Sprinter)"
+        data_type: varchar
+        tests:
+          - not_null
+      - name: service_company
+        description: "Railway company operating the service"
+        data_type: varchar
+        tests:
+          - not_null
+      - name: train_number
+        description: "Train number for the service"
+        data_type: bigint
+        tests:
+          - not_null
+      - name: is_completely_cancelled
+        description: "Whether the entire service was cancelled"
+        data_type: boolean
+        tests:
+          - not_null
+      - name: is_partly_cancelled
+        description: "Whether part of the service was cancelled"
+        data_type: boolean
+        tests:
+          - not_null
+      - name: maximum_delay_minutes
+        description: "Maximum delay in minutes for the service"
+        data_type: bigint
+      - name: stop_rdt_id
+        description: "Stop RDT identifier - unique identifier for each stop"
+        data_type: bigint
+        tests:
+          - not_null
+      - name: station_code
+        description: "Station code for the stop"
+        data_type: varchar
+        tests:
+          - not_null
+      - name: station_name
+        description: "Station name for the stop"
+        data_type: varchar
+        tests:
+          - not_null
+      - name: departure_time
+        description: "Scheduled departure time from the stop"
+        data_type: timestamp
+      - name: departure_delay_minutes
+        description: "Departure delay in minutes"
+        data_type: bigint
+      - name: is_departure_cancelled
+        description: "Whether the departure was cancelled"
+        data_type: boolean
+      - name: arrival_time
+        description: "Scheduled arrival time at the stop"
+        data_type: timestamp
+      - name: arrival_delay_minutes
+        description: "Arrival delay in minutes"
+        data_type: bigint
+      - name: is_arrival_cancelled
+        description: "Whether the arrival was cancelled"
+        data_type: boolean
+      - name: has_platform_change
+        description: "Whether there was a platform change at this stop"
+        data_type: boolean
+      - name: planned_platform
+        description: "Originally planned platform"
+        data_type: varchar
+      - name: actual_platform
+        description: "Actual platform used"
+        data_type: varchar

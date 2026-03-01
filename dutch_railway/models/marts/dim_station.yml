@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: dim_station
+    description: |
+      Dimension table containing railway station attributes.
+      Built from an SCD Type 2 snapshot and filtered to current records only
+      (dbt_valid_to is null).
+
+      Grain: one row per station (current state only).
+
+    columns:
+      - name: station_id
+        description: Surrogate key identifying the station.
+        tests:
+          - not_null
+          - unique
+
+      - name: station_code
+        description: >
+          Business/natural station code (abbreviation of station name).
+          Used as the join key in source systems.
+
+      - name: uic_code
+        description: UIC station code (international railway identifier).
+
+      - name: station_name_short
+        description: Short display name for the station.
+
+      - name: station_name_medium
+        description: Medium-length display name for the station.
+
+      - name: station_name_long
+        description: Full official station name.
+
+      - name: slug
+        description: URL-friendly station identifier.
+
+      - name: country
+        description: Country where the station is located.
+
+      - name: station_type
+        description: >
+          Station classification (e.g. hub, intercity, local).
+          Tracked as a slowly changing attribute in the SCD snapshot.
+
+      - name: station_type_rank
+        description: >
+          Ordinal ranking of station_type from largest to smallest.
+          Lower values represent larger/more important stations.
+
+      - name: latitude
+        description: Latitude of the station in decimal degrees.
+
+      - name: longitude
+        description: Longitude of the station in decimal degrees.

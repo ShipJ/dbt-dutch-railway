@@ -1,0 +1,8 @@
+dutch_railway:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: 'dutch_railway.duckdb'
+      schema: main
+      threads: 4

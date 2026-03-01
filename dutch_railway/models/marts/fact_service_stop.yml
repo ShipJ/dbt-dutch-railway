@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: fact_service_stop
+    description: ""
+    columns:
+      - name: service_stop_key
+        description: "Unique combination of service x stop x date"
+        data_type: string
+        tests:
+          - not_null
+          - unique
+      - name: station_id
+        description: "Unique identifier for the origin station"
+        data_type: string
+      - name: event_type
+        description: ""
+        data_type: string
+
+        meta:
+          metrics:
+            stops:
+              type: count
+              filters:
+                - event_type: 
+                  - 'stop'
+            skips:
+              type: count
+              filters:
+                - event_type: 
+                  - 'skip'
+            cancellations:
+              type: count
+              filters:
+                - event_type: 
+                  - 'cancelled'
+
+    meta:
+      primary_key: service_stop_key
+      joins:
+        - join: dim_station
+          type: inner
+          sql_on: ${dim_station.station_id} = ${fact_service_stop.station_id}
+          fields: [station_name_long]
+          relationship: many-to-one

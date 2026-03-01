@@ -1,0 +1,178 @@
+version: 2
+
+sources:
+  - name: railway
+    description: |
+      Raw railway data from the DuckDB database.
+      Note: Source data contains column names with colons (e.g. "Service:Type") which is not a best practice.
+      These are normalized to standard snake_case in staging models.
+    schema: source
+    freshness:
+      warn_after: {count: 24, period: hour}  # Default warn if data is over 1d
+      error_after: {count: 72, period: hour}  # Default error if data is over 3d
+    loaded_at_field: "cast('2026-01-24' as timestamp)"
+    tables:
+      - name: services
+        description: "Combined service and stop data for Dutch railway services"
+        tags: ['tier0']
+        freshness:
+          warn_after: {count: 24, period: hour}
+          error_after: {count: 48, period: hour}
+        columns:
+          - name: Service:RDT-ID
+            description: "Service RDT identifier"
+            data_type: bigint
+          - name: Service:Date
+            description: "Date of the service"
+            data_type: date
+          - name: Service:Type
+            description: "Type of service (e.g., Intercity, Sprinter)"
+            data_type: varchar
+          - name: Service:Company
+            description: "Railway company operating the service"
+            data_type: varchar
+          - name: Service:Train number
+            description: "Train number for the service"
+            data_type: bigint
+          - name: Service:Completely cancelled
+            description: "Whether the entire service was cancelled"
+            data_type: boolean
+          - name: Service:Partly cancelled
+            description: "Whether part of the service was cancelled"
+            data_type: boolean
+          - name: Service:Maximum delay
+            description: "Maximum delay in minutes for the service"
+            data_type: bigint
+          - name: Stop:RDT-ID
+            description: "Stop RDT identifier"
+            data_type: bigint
+          - name: Stop:Station code
+            description: "Station code for the stop"
+            data_type: varchar
+          - name: Stop:Station name
+            description: "Station name for the stop"
+            data_type: varchar
+          - name: Stop:Arrival time
+            description: "Scheduled arrival time at the stop"
+            data_type: timestamp
+          - name: Stop:Arrival delay
+            description: "Arrival delay in minutes"
+            data_type: bigint
+          - name: Stop:Arrival cancelled
+            description: "Whether the arrival was cancelled"
+            data_type: boolean
+          - name: Stop:Departure time
+            description: "Scheduled departure time from the stop"
+            data_type: timestamp
+          - name: Stop:Departure delay
+            description: "Departure delay in minutes"
+            data_type: bigint
+          - name: Stop:Departure cancelled
+            description: "Whether the departure was cancelled"
+            data_type: boolean
+          - name: Stop:Platform change
+            description: "Whether there was a platform change"
+            data_type: boolean
+          - name: Stop:Planned platform
+            description: "Originally planned platform"
+            data_type: varchar
+          - name: Stop:Actual platform
+            description: "Actual platform used"
+            data_type: varchar
+      - name: stations
+        description: "Station information for Dutch railway stations and international connections"
+        tags: ['tier2']
+        freshness:
+          warn_after: {count: 7, period: day}  # Only warn, never error
+        columns:
+          - name: id
+            description: "Unique identifier for the station"
+            data_type: bigint
+          - name: code
+            description: "Station code (short abbreviation)"
+            data_type: varchar
+          - name: uic
+            description: "UIC station code (international standard)"
+            data_type: bigint
+          - name: name_short
+            description: "Short name of the station"
+            data_type: varchar
+          - name: name_medium
+            description: "Medium name of the station"
+            data_type: varchar
+          - name: name_long
+            description: "Full name of the station"
+            data_type: varchar
+          - name: slug
+            description: "URL-friendly slug of the station name"
+            data_type: varchar
+          - name: country
+            description: "Country code (NL, D, B, F, etc.)"
+            data_type: varchar
+          - name: type
+            description: "Station type (e.g., intercitystation, stoptreinstation, megastation)"
+            data_type: varchar
+          - name: geo_lat
+            description: "Latitude coordinate"
+            data_type: double
+          - name: geo_lng
+            description: "Longitude coordinate"
+            data_type: double
+      - name: disruptions
+        description: "Service disruption incidents with cause analysis and timing data"
+        tags: ['tier0']
+        freshness:
+          warn_after: {count: 12, period: hour}  # Warn if data is over 12hrs
+          error_after: {count: 24, period: hour}  # Error if data is over 24hrs
+        columns:
+          - name: rdt_id
+            description: "Unique disruption identifier"
+            data_type: integer
+          - name: ns_lines
+            description: "NS line names affected by disruption"
+            data_type: text
+          - name: rdt_lines
+            description: "RDT line descriptions affected"
+            data_type: text
+          - name: rdt_lines_id
+            description: "RDT line identifiers"
+            data_type: text
+          - name: rdt_station_names
+            description: "Names of affected stations"
+            data_type: text
+          - name: rdt_station_codes
+            description: "Codes of affected stations"
+            data_type: text
+          - name: cause_nl
+            description: "Disruption cause in Dutch"
+            data_type: text
+          - name: cause_en
+            description: "Disruption cause in English"
+            data_type: text
+          - name: statistical_cause_nl
+            description: "Statistical cause category in Dutch"
+            data_type: text
+          - name: statistical_cause_en
+            description: "Statistical cause category in English"
+            data_type: text
+          - name: cause_group
+            description: "High-level cause grouping"
+            data_type: varchar
+          - name: start_time
+            description: "Disruption start timestamp"
+            data_type: timestamp
+          - name: end_time
+            description: "Disruption end timestamp"
+            data_type: timestamp
+          - name: duration_minutes
+            description: "Total disruption duration in minutes"
+            data_type: integer
+      - name: tariff_distances
+        description: "Distance matrix between railway stations for tariff calculation purposes"
+        tags: ['tier2']
+        freshness:
+          warn_after: {count: 7, period: day}  # Only warn, never error
+        columns:
+          - name: Station
+            description: "Origin station code"
+            data_type: varchar

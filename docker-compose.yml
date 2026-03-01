@@ -1,0 +1,87 @@
+services:
+  # Lightdash internal DB
+  lightdash-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - lightdash_db_data:/var/lib/postgresql/data
+    networks:
+      - lightdash-net
+  # S3 required for pagination
+  minio:
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z-cpuv1
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - lightdash-net
+  # Create bucket
+  minio-init:
+    image: minio/mc:RELEASE.2025-08-13T08-35-41Z-cpuv1
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+    depends_on:
+      - minio
+    networks:
+      - lightdash-net
+    entrypoint: >
+        /bin/sh -c "
+        echo 'Waiting for MinIO...';
+        for i in $(seq 1 60); do
+          mc alias set local http://minio:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD >/dev/null 2>&1 && break;
+          sleep 1;
+        done;
+        mc alias set local http://minio:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD &&
+        mc mb -p local/$MINIO_BUCKET || true
+        "
+  lightdash:
+    image: lightdash/lightdash:0.2374.0
+    platform: linux/amd64
+    depends_on:
+      - lightdash-db
+      - minio
+      - minio-init
+    ports:
+      - "8080:8080"
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PORT: 5432
+      PGHOST: ${POSTGRES_HOST}
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+      PGPORT: 5432
+      LIGHTDASH_SECRET: ${LIGHTDASH_SECRET}
+      SITE_URL: "http://localhost:8080"
+      S3_ENDPOINT: "http://minio:9000"
+      S3_REGION: ${MINIO_REGION}
+      S3_BUCKET: ${MINIO_BUCKET}
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      S3_FORCE_PATH_STYLE: "true"
+    volumes:
+      - ./dutch_railway:/usr/app/dbt
+    networks:
+      - lightdash-net
+volumes:
+  lightdash_db_data:
+  minio_data:
+networks:
+  lightdash-net:
+    name: lightdash-net

@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: agg_station_day
+    description: ""
+    columns:
+      - name: station_id
+        description: "Unique identifier for an origin -> destination pair"
+  

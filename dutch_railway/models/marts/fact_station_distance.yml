@@ -1,0 +1,69 @@
+version: 2
+
+models:
+  - name: fact_station_distance
+    description: ""
+    columns:
+      - name: origin_destination_key
+        description: "Unique identifier for an origin -> destination pair"
+        data_type: string
+        tests:
+          - unique:
+              config:
+                tags: ['tier0']            
+          - not_null:
+              config:
+                tags: ['tier0']
+
+      - name: origin_station_id
+        description: "Unique identifier for the origin station"
+        data_type: string
+
+      - name: origin_station_code
+        description: "Corresponding origin station code"
+        data_type: string
+
+      - name: destination_station_id
+        description: "Unique identifier for the destination station"
+        data_type: string
+
+      - name: destination_station_code
+        description: "Corresponding destination station code"
+        data_type: string
+
+      - name: distance_km
+        description: "Distance between the origin and destination stations in kilometers for fare estimation"
+        data_type: integer
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1000
+              config:
+                tags: ['tier2']     
+        config:
+          meta:
+            metrics:
+              avg_distance_km:
+                type: average
+              total_distance_km:
+                type: sum
+                
+    meta:
+      primary_key: origin_destination_key
+      joins:
+        - join: dim_station
+          alias: origin
+          label: "Origin"
+          type: inner
+          sql_on: ${origin.station_id} = ${fact_station_distance.origin_station_id}
+          relationship: many-to-one
+        - join: dim_station
+          alias: destination
+          label: "Destination"
+          type: inner
+          sql_on: ${destination.station_id} = ${fact_station_distance.destination_station_id}
+          relationship: many-to-one
+
+
+
+  
