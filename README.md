@@ -58,24 +58,6 @@ dutch_railway/
 └── dutch_railway.duckdb
 ```
 
-### 📈 Business Questions
-1. **"Which station is stopped at the most?"**
-2. **"Which station experiences the most disruptions longer than 30 minutes?"**
-3. **"What is the average distance between connected stations?"**
-4. **"How many services run in peak vs off-peak hours?"**
-    - Peak hours are defined as 7-9 AM and 4-6 PM on weekdays.
-5. **"What are the top 5 most common causes of service disruptions?"**
-6. **"Which train routes have the most services per day split by service type?"**
-
-### 📝 Additional Considerations
-
-- Only a month's worth of services are provided so consider how to model for scalability. 
-    - What if we were modeling a full year of data? 
-    - What if we were looking at data from the whole of Europe?
-- Businesses use a Semantic Layer for serving metrics to business users. Consider how you would model for this. Some examples of Semantic Layer tools:
-    - [Lightdash](https://docs.lightdash.com/guides/lightdash-semantic-layer)
-    - [dbt Cloud](https://docs.getdbt.com/guides/sl-partner-integration-guide?step=1)
-
 ## 🧬 Modelling
 
 I modeled the Dutch Railway data to reflect real-world railway concepts as much as possible. I considered *entities* (things that exist, are relatively stable, and descriptive), *events* (things that happen, are time-bound and/or or measurable), and the *relationships* between them. I created an example ERD (`images > Example ERD.png`) but would want to flesh this out.
